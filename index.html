@@ -61,7 +61,6 @@
             aspect-ratio: 550 / 450;
         }
 
-        /* Contador de vontades */
         .bag-counter {
             background: #f3cd81;
             padding: 12px 18px;
@@ -77,7 +76,6 @@
             margin: 16px 0 12px 0;
         }
 
-        /* Botão sozinho */
         .button-wrapper {
             margin-bottom: 16px;
         }
@@ -102,7 +100,6 @@
             box-shadow: 0 1px 0 #a45d2a;
         }
 
-        /* Área de mensagem - agora embaixo, ocupando largura total */
         .message-area {
             background: #f7e5c2;
             padding: 14px 16px;
@@ -111,13 +108,19 @@
             font-weight: 500;
             color: #8b5a2b;
             text-align: center;
-            font-size: clamp(0.85rem, 4vw, 1rem);
-            min-height: 75px;
+            font-size: clamp(0.9rem, 4.5vw, 1.1rem);
+            min-height: 85px;
             display: flex;
             align-items: center;
             justify-content: center;
             word-break: break-word;
             margin-top: 8px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .message-area:active {
+            background: #efdaae;
         }
 
         .quote {
@@ -128,6 +131,13 @@
             background: #fff1dd;
             border-radius: 60px;
             padding: 8px 12px;
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 0.7rem;
+            color: #c49a6c;
+            margin-top: 8px;
         }
     </style>
 </head>
@@ -140,23 +150,23 @@
         
         <canvas id="bagCanvas" width="550" height="450" style="width:100%; height:auto; aspect-ratio:550/450"></canvas>
         
-        <!-- Contador sozinho -->
         <div class="bag-counter">
             🧡 <span id="vontadeCount">0</span> vontade(s)
         </div>
         
-        <!-- Botão sozinho -->
         <div class="button-wrapper">
             <button id="resetBtn">🌼 Nova Bolsa</button>
         </div>
         
-        <!-- Mensagem embaixo de tudo -->
         <div class="message-area" id="mensagemPoetica">
-            💭 “Toque nas vontades que flutuam”
+            💭 “Toque nos desejos que flutuam”
         </div>
         
         <div class="quote">
             📖 inspirado em "A Bolsa Amarela" — Lygia Bojunga 🌟
+        </div>
+        <div class="hint">
+            ✨ Toque na mensagem para trocar 💬
         </div>
     </div>
 </div>
@@ -173,8 +183,10 @@
         
         let vontadesGuardadas = 0;
         let vontadesAtivas = [];
+        let desejosVoando = []; // { x, y, targetX, targetY, emoji, progresso, velocidade }
         let frames = 0;
         let animationId = null;
+        let mensagemAtual = "💭 “Toque nos desejos que flutuam”";
         
         const MAX_VONTADES_TELA = 6;
         const SPAWN_RATE = 95;
@@ -212,14 +224,28 @@
             "Ela sorriu.", "Mais uma vontade segura.", "Obrigada por guardar."
         ];
         
-        function showMessage(texto, cor = "#8b5a2b") {
-            msgDiv.innerHTML = `💭 “${texto}”`;
+        // Mensagem permanente até clique
+        function setMensagemPermanente(texto, cor = "#8b5a2b") {
+            mensagemAtual = `💭 “${texto}”`;
+            msgDiv.innerHTML = mensagemAtual;
             msgDiv.style.color = cor;
-            setTimeout(() => {
-                if(msgDiv.innerHTML === `💭 “${texto}”`)
-                    msgDiv.innerHTML = `💭 “Toque nas vontades que flutuam”`;
-                msgDiv.style.color = "#8b5a2b";
-            }, 2200);
+        }
+        
+        function avancarMensagem() {
+            // Se a mensagem atual for a padrão, não muda; se for uma mensagem especial, volta para a padrão
+            if(mensagemAtual.includes("Toque nos desejos")) {
+                // mostra uma dica alternativa
+                const dicas = [
+                    "✨ Toque nos círculos coloridos ✨",
+                    "👜 Cada desejo vai voar pra bolsa!",
+                    "🌟 Você pode guardar quantas vontades quiser",
+                    "💛 A bolsa aceita tudo o que você quer"
+                ];
+                const nova = dicas[Math.floor(Math.random() * dicas.length)];
+                setMensagemPermanente(nova, "#a5713a");
+            } else {
+                setMensagemPermanente("Toque nos desejos que flutuam", "#8b5a2b");
+            }
         }
         
         function updateUI() {
@@ -239,11 +265,13 @@
                 emoji: obj.emoji,
                 titulo: obj.titulo,
                 vy: vy,
-                corFundo: obj.cor
+                corFundo: obj.cor,
+                id: Math.random()
             });
         }
         
         function updateMovimento() {
+            // Atualiza vontades comuns
             for(let i = 0; i < vontadesAtivas.length; i++) {
                 const v = vontadesAtivas[i];
                 v.y += v.vy;
@@ -252,6 +280,42 @@
                     i--;
                 }
             }
+            
+            // Atualiza desejos voando
+            for(let i = 0; i < desejosVoando.length; i++) {
+                const d = desejosVoando[i];
+                d.progresso += d.velocidade;
+                if(d.progresso >= 1) {
+                    // chegou na bolsa!
+                    desejosVoando.splice(i,1);
+                    i--;
+                    bolsa.brilhoAtivo = 15;
+                } else {
+                    // interpola posição
+                    d.x = d.startX + (d.targetX - d.startX) * d.progresso;
+                    d.y = d.startY + (d.targetY - d.startY) * d.progresso;
+                }
+            }
+        }
+        
+        function guardarDesejo(v, idx) {
+            const frase = frasesBoas[Math.floor(Math.random() * frasesBoas.length)];
+            setMensagemPermanente(`${v.titulo}: ${frase}`, "#c07a3a");
+            
+            // Cria efeito de voo
+            desejosVoando.push({
+                startX: v.x,
+                startY: v.y,
+                targetX: bolsa.x,
+                targetY: bolsa.y - 15,
+                emoji: v.emoji,
+                progresso: 0,
+                velocidade: 0.05 // 20 frames até chegar
+            });
+            
+            vontadesGuardadas++;
+            updateUI();
+            vontadesAtivas.splice(idx, 1);
         }
         
         function handleCanvasClick(e) {
@@ -274,22 +338,20 @@
             
             if(canvasX < 0 || canvasX > width || canvasY < 0 || canvasY > height) return;
             
+            // Verifica clique em desejos
             for(let i = 0; i < vontadesAtivas.length; i++) {
                 const v = vontadesAtivas[i];
                 const dx = canvasX - v.x;
                 const dy = canvasY - v.y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
                 if(dist < v.radius) {
-                    vontadesGuardadas++;
-                    updateUI();
-                    const frase = frasesBoas[Math.floor(Math.random() * frasesBoas.length)];
-                    showMessage(`${v.titulo}: ${frase}`, "#c07a3a");
-                    vontadesAtivas.splice(i,1);
-                    bolsa.brilhoAtivo = 12;
+                    guardarDesejo(v, i);
                     return;
                 }
             }
-            showMessage("Toque nos círculos flutuantes e guarde na bolsa!", "#b47c48");
+            
+            // Clicou fora: mensagem amigável
+            setMensagemPermanente("Toque nos círculos coloridos e veja a mágica! 🎈", "#b47c48");
         }
         
         function drawBag() {
@@ -327,6 +389,10 @@
                 ctx.fillStyle = "#fff5cf";
                 ctx.fill();
                 bolsa.brilhoAtivo--;
+                // brilho extra
+                ctx.beginPath();
+                ctx.ellipse(bolsa.x-10, bolsa.y-10, 8, 6, 0, 0, Math.PI*2);
+                ctx.fill();
             }
             
             ctx.fillStyle = "#6b3f1c";
@@ -353,6 +419,7 @@
         }
         
         function drawVontades() {
+            // desenha desejos normais
             for(let v of vontadesAtivas) {
                 ctx.shadowBlur = 5;
                 ctx.beginPath();
@@ -369,6 +436,25 @@
                 ctx.font = `bold 11px "Quicksand", system-ui`;
                 ctx.fillStyle = "#4a311c";
                 ctx.fillText(v.titulo, v.x-22, v.y+30);
+            }
+            
+            // desenha desejos voando
+            for(let d of desejosVoando) {
+                ctx.shadowBlur = 8;
+                ctx.beginPath();
+                ctx.arc(d.x, d.y, 22, 0, Math.PI*2);
+                ctx.fillStyle = "#ffdd99cc";
+                ctx.fill();
+                ctx.font = `28px "Segoe UI Emoji", "Apple Color Emoji"`;
+                ctx.fillStyle = "#5c3e1f";
+                ctx.fillText(d.emoji, d.x-14, d.y+10);
+                // rastro de estrelas
+                ctx.fillStyle = "#ffcc66";
+                for(let s=0;s<3;s++) {
+                    ctx.beginPath();
+                    ctx.arc(d.x - 8 + s*8, d.y-5, 2, 0, Math.PI*2);
+                    ctx.fill();
+                }
             }
             ctx.shadowBlur = 0;
         }
@@ -408,6 +494,7 @@
             animationId = requestAnimationFrame(animate);
         }
         
+        // Eventos
         canvas.addEventListener('click', handleCanvasClick);
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
@@ -415,11 +502,19 @@
             handleCanvasClick({ clientX: touch.clientX, clientY: touch.clientY, touches: null });
         });
         
+        // Clique na mensagem avança
+        msgDiv.addEventListener('click', avancarMensagem);
+        msgDiv.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            avancarMensagem();
+        });
+        
         document.getElementById('resetBtn').addEventListener('click', () => {
             vontadesGuardadas = 0;
             vontadesAtivas = [];
+            desejosVoando = [];
             updateUI();
-            showMessage("Nova bolsa amarela! Vontades renascem 🌼", "#b28046");
+            setMensagemPermanente("Nova bolsa amarela! Vontades renascem 🌼", "#b28046");
             for(let i=0;i<3;i++) spawnVontade();
         });
         

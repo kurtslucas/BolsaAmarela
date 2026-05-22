@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>✨ A Bolsa Amarela — Guarde suas vontades ✨</title>
+    <title>✨ A Bolsa Amarela — INFINITA ✨</title>
     <style>
         * {
             user-select: none;
@@ -18,7 +19,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Comic Neue', cursive;
+            font-family: 'Segoe UI', 'Quicksand', system-ui, sans-serif;
             padding: 12px;
         }
 
@@ -26,27 +27,47 @@
             background: #fff8e7;
             border-radius: 48px;
             padding: 16px;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.2), inset 0 1px 4px rgba(255,245,200,0.8);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 600px;
+            max-width: 650px;
             margin: auto;
         }
 
         .title {
             text-align: center;
-            font-size: clamp(1.3rem, 6vw, 1.8rem);
+            font-size: clamp(1.2rem, 5vw, 1.6rem);
             font-weight: bold;
             color: #b45f2b;
-            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            flex-wrap: wrap;
+            margin-bottom: 10px;
         }
 
-        .title span {
-            font-size: clamp(1.6rem, 7vw, 2.2rem);
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            background: #e6c68b;
+            box-shadow: 0 3px 0 #a45d2a;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            width: auto;
+            border: none;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background: #f5a623;
+            transform: translateY(1px);
+            box-shadow: 0 2px 0 #a45d2a;
         }
 
         canvas {
@@ -61,38 +82,61 @@
             aspect-ratio: 550 / 450;
         }
 
-        .bag-counter {
+        .stats {
             background: #f3cd81;
-            padding: 12px 18px;
-            border-radius: 60px;
-            font-weight: bold;
-            font-size: clamp(1.2rem, 5vw, 1.5rem);
-            color: #3e2a1f;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-align: center;
-            margin: 16px 0 12px 0;
+            border-radius: 48px;
+            padding: 12px 16px;
+            margin: 14px 0 10px;
         }
 
-        .button-wrapper {
-            margin-bottom: 16px;
+        .bag-counter {
+            font-weight: bold;
+            font-size: clamp(1rem, 4.5vw, 1.3rem);
+            color: #3e2a1f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-container {
+            background: #e6b05e;
+            border-radius: 30px;
+            height: 12px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-bar {
+            background: #4c8b3c;
+            width: 0%;
+            height: 100%;
+            border-radius: 30px;
+            transition: width 0.3s ease;
+        }
+
+        .special-badge {
+            background: #d9a13b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.75rem;
         }
 
         button {
             background: #f3b33d;
             border: none;
-            font-size: clamp(1rem, 4.5vw, 1.2rem);
+            font-size: clamp(0.9rem, 4vw, 1.1rem);
             font-weight: bold;
-            padding: 14px 20px;
+            padding: 12px 20px;
             border-radius: 60px;
             cursor: pointer;
-            font-family: inherit;
-            transition: 0.1s linear;
-            color: #2c1a0c;
             box-shadow: 0 4px 0 #a45d2a;
             width: 100%;
+            font-family: inherit;
+            color: #2c1a0c;
         }
 
         button:active {
@@ -102,72 +146,93 @@
 
         .message-area {
             background: #f7e5c2;
-            padding: 14px 16px;
-            border-radius: 32px;
+            padding: 12px 16px;
+            border-radius: 28px;
             font-style: italic;
-            font-weight: 500;
-            color: #8b5a2b;
             text-align: center;
-            font-size: clamp(0.9rem, 4.5vw, 1.1rem);
-            min-height: 85px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            word-break: break-word;
-            margin-top: 8px;
+            font-size: clamp(0.85rem, 4vw, 1rem);
+            min-height: 80px;
             cursor: pointer;
-            transition: 0.1s;
+            margin-top: 12px;
+            color: #8b5a2b;
         }
 
-        .message-area:active {
-            background: #efdaae;
+        .character-hint {
+            font-size: 0.7rem;
+            color: #c98f4b;
+            margin-top: 5px;
         }
 
         .quote {
             text-align: center;
-            margin-top: 14px;
-            font-size: clamp(0.7rem, 3.5vw, 0.85rem);
+            margin-top: 12px;
+            font-size: 0.7rem;
             color: #b47c48;
-            background: #fff1dd;
-            border-radius: 60px;
-            padding: 8px 12px;
         }
 
-        .hint {
+        .final-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .final-card {
+            background: #ffefcf;
+            border-radius: 48px;
+            padding: 28px 22px;
+            max-width: 320px;
             text-align: center;
-            font-size: 0.7rem;
-            color: #c49a6c;
-            margin-top: 8px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .final-card h2 {
+            color: #b45f2b;
+            margin: 0 0 12px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
 <div>
     <div class="game-wrapper">
-        <div class="title">
-            <span>👜</span> A Bolsa Amarela <span>✨</span>
+        <div class="title">👜 A Bolsa Amarela ✨</div>
+        
+        <div class="mode-selector">
+            <button id="modoVontadesBtn" class="mode-btn active">🌟 Desejos</button>
+            <button id="modoPersonagensBtn" class="mode-btn">🐔 Personagens</button>
         </div>
         
-        <canvas id="bagCanvas" width="550" height="450" style="width:100%; height:auto; aspect-ratio:550/450"></canvas>
+        <canvas id="bagCanvas" width="550" height="450"></canvas>
         
-        <div class="bag-counter">
-            🧡 <span id="vontadeCount">0</span> vontade(s)
+        <div class="stats">
+            <div class="bag-counter">
+                <span>🧡 <span id="totalCount">0</span> <span id="modoLabel">desejo(s)</span></span>
+                <span class="special-badge" id="specialBadge">📖 0/3</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
         </div>
         
-        <div class="button-wrapper">
-            <button id="resetBtn">🌼 Nova Bolsa</button>
-        </div>
+        <button id="resetBtn">🌼 Nova Bolsa</button>
         
         <div class="message-area" id="mensagemPoetica">
-            💭 “Toque nos desejos que flutuam”
+            💭 “Toque nos itens flutuantes”
+            <div class="character-hint" id="extraHint"></div>
         </div>
         
-        <div class="quote">
-            📖 inspirado em "A Bolsa Amarela" — Lygia Bojunga 🌟
-        </div>
-        <div class="hint">
-            ✨ Toque na mensagem para trocar 💬
-        </div>
+        <div class="quote">📖 inspirado em "A Bolsa Amarela" — Lygia Bojunga 🌟</div>
     </div>
 </div>
 
@@ -176,146 +241,219 @@
         const canvas = document.getElementById('bagCanvas');
         const ctx = canvas.getContext('2d');
         
-        const width = 550;
-        const height = 450;
-        canvas.width = width;
-        canvas.height = height;
+        const width = 550, height = 450;
+        canvas.width = width; canvas.height = height;
         
-        let vontadesGuardadas = 0;
-        let vontadesAtivas = [];
-        let desejosVoando = []; // { x, y, targetX, targetY, emoji, progresso, velocidade }
+        let currentMode = 'wishes';
+        
+        // Controle de coleção (APENAS para o final especial)
+        let livroColetadosIds = new Set();   // guarda as 3 do livro (só pra saber se já pegou cada uma)
+        let finalEspecialJaAconteceu = false;
+        
+        // Todos os itens coletados (contagem total, com repetição)
+        let totalColetado = 0;
+        
+        let floatingItems = [];
+        let flyingItems = [];
         let frames = 0;
         let animationId = null;
-        let mensagemAtual = "💭 “Toque nos desejos que flutuam”";
         
-        const MAX_VONTADES_TELA = 6;
-        const SPAWN_RATE = 95;
-        
+        // ========== MUITAS VONTADES (MAIS DE 60!) ==========
         const listaVontades = [
-            { emoji: "🐺", titulo: "ser lobo", cor: "#b87c4f" },
-            { emoji: "✈️", titulo: "voar", cor: "#6aa3b4" },
-            { emoji: "📖", titulo: "escrever", cor: "#e3b87c" },
-            { emoji: "🎨", titulo: "pintar", cor: "#d99e4e" },
-            { emoji: "🌊", titulo: "mar", cor: "#5f9db2" },
-            { emoji: "🚀", titulo: "lua", cor: "#b39f7a" },
-            { emoji: "🎭", titulo: "outra pessoa", cor: "#c2847a" },
-            { emoji: "🧸", titulo: "nunca crescer", cor: "#cca66b" },
-            { emoji: "🌈", titulo: "arco-íris", cor: "#d9ae6c" },
-            { emoji: "🔮", titulo: "magia", cor: "#b189c9" },
-            { emoji: "🎪", titulo: "circo", cor: "#e3a05e" },
-            { emoji: "🍰", titulo: "doce", cor: "#e2b56a" },
-            { emoji: "⭐", titulo: "ser estrela", cor: "#efc47c" },
-            { emoji: "🎵", titulo: "cantar", cor: "#c9a87b" }
+            // Animais (15)
+            { id: "w_lobo", emoji: "🐺", titulo: "ser lobo", cor: "#b87c4f", descricao: "Uivar para a lua e ser livre", livro: false, raro: false },
+            { id: "w_gato", emoji: "🐱", titulo: "ser gato", cor: "#e3a56d", descricao: "Dormir o dia todo e ganhar carinho", livro: false, raro: false },
+            { id: "w_passaro", emoji: "🐦", titulo: "voar como pássaro", cor: "#6aa3b4", descricao: "Subir bem alto, sem avião", livro: false, raro: false },
+            { id: "w_peixe", emoji: "🐟", titulo: "nadar no fundo do mar", cor: "#5f9db2", descricao: "Explorar navios naufragados", livro: false, raro: false },
+            { id: "w_borboleta", emoji: "🦋", titulo: "ser borboleta", cor: "#d18ec9", descricao: "Ter asas coloridas e pousar em flores", livro: false, raro: false },
+            { id: "w_cavalo", emoji: "🐴", titulo: "galopar livre", cor: "#c49a6c", descricao: "Correr sem rumo pelo campo", livro: false, raro: false },
+            { id: "w_golfinho", emoji: "🐬", titulo: "nadar com golfinhos", cor: "#7fc9c2", descricao: "Saltar e brincar no oceano", livro: false, raro: false },
+            { id: "w_elefante", emoji: "🐘", titulo: "ter memória de elefante", cor: "#9a8a7a", descricao: "Nunca esquecer os momentos bons", livro: false, raro: false },
+            
+            // Poderes mágicos (12)
+            { id: "w_invisivel", emoji: "👻", titulo: "ser invisível", cor: "#b49fd9", descricao: "Andar por aí sem ninguém ver", livro: false, raro: true },
+            { id: "w_voar", emoji: "🕊️", titulo: "voar", cor: "#aaddff", descricao: "Subir nas nuvens sem esforço", livro: false, raro: false },
+            { id: "w_teletransporte", emoji: "🌀", titulo: "teletransporte", cor: "#c27e9a", descricao: "Estar em qualquer lugar num piscar", livro: false, raro: true },
+            { id: "w_ler_mentes", emoji: "🧠", titulo: "ler pensamentos", cor: "#b086b5", descricao: "Saber o que os outros estão sentindo", livro: false, raro: true },
+            { id: "w_controlar_tempo", emoji: "⏳", titulo: "controlar o tempo", cor: "#b5a27a", descricao: "Voltar ao passado ou pular dias ruins", livro: false, raro: true },
+            { id: "w_falar_animais", emoji: "🐾", titulo: "conversar com bichos", cor: "#9bbe7a", descricao: "Entender o que os animais dizem", livro: false, raro: false },
+            
+            // Profissões dos sonhos (12)
+            { id: "w_astronauta", emoji: "👩‍🚀", titulo: "ser astronauta", cor: "#7a9eb5", descricao: "Viajar pelo espaço", livro: false, raro: true },
+            { id: "w_pirata", emoji: "🏴‍☠️", titulo: "ser pirata", cor: "#c28a5a", descricao: "Navegar em busca de tesouros", livro: false, raro: false },
+            { id: "w_princesa", emoji: "👸", titulo: "ser princesa", cor: "#e3aacc", descricao: "Morar num castelo", livro: false, raro: false },
+            { id: "w_mago", emoji: "🧙", titulo: "ser mago", cor: "#9a6ec9", descricao: "Lutar contra dragões", livro: false, raro: true },
+            { id: "w_detetive", emoji: "🕵️", titulo: "ser detetive", cor: "#a58c6f", descricao: "Resolver mistérios", livro: false, raro: false },
+            
+            // Coisas mágicas e lugares (20+)
+            { id: "w_arcoiris", emoji: "🌈", titulo: "pular num arco-íris", cor: "#e3a98a", descricao: "Encontrar o pote de ouro", livro: false, raro: false },
+            { id: "w_estrela_cadente", emoji: "⭐", titulo: "pegar uma estrela", cor: "#efc47c", descricao: "Guardar um pedaço do céu", livro: false, raro: true },
+            { id: "w_nuvem", emoji: "☁️", titulo: "morar numa nuvem", cor: "#c6d9e6", descricao: "Ter a cama mais fofa do mundo", livro: false, raro: false },
+            { id: "w_biscoito", emoji: "🍪", titulo: "chover biscoito", cor: "#dbae6a", descricao: "Comer biscoito todo dia", livro: false, raro: false },
+            { id: "w_sorvete", emoji: "🍦", titulo: "sorvete infinito", cor: "#f2c4a8", descricao: "Sorvete que nunca acaba", livro: false, raro: false },
+            { id: "w_brincar_eternamente", emoji: "🎠", titulo: "brincar para sempre", cor: "#deaa88", descricao: "Férias eternas", livro: false, raro: false },
+            { id: "w_amizade", emoji: "🤝", titulo: "fazer amigos", cor: "#c9ae7a", descricao: "Encontrar amigos verdadeiros", livro: false, raro: false },
+            { id: "w_ajudar", emoji: "🫂", titulo: "ajudar as pessoas", cor: "#b5c48a", descricao: "Tornar o mundo melhor", livro: false, raro: false },
+            
+            // Vontades canônicas do livro (3) - aparecem normal, mas o controle é separado
+            { id: "w_escrever", emoji: "📖", titulo: "escrever", cor: "#e3b87c", descricao: "Vontade de ser escritora", livro: true, raro: false },
+            { id: "w_crescer", emoji: "👧➡️👩", titulo: "crescer", cor: "#d9ae6c", descricao: "Ser respeitada como gente grande", livro: true, raro: false },
+            { id: "w_menino", emoji: "♂️", titulo: "ser menino", cor: "#7cb5a3", descricao: "Ter as mesmas liberdades", livro: true, raro: false },
+            
+            // Mais sentimentos e desejos abstratos
+            { id: "w_ser_feliz", emoji: "😊", titulo: "ser feliz", cor: "#f2cf66", descricao: "Acordar feliz todo dia", livro: false, raro: false },
+            { id: "w_ser_abraçado", emoji: "🤗", titulo: "ganhar abraços", cor: "#e3a571", descricao: "Abraços quentinhos sempre", livro: false, raro: false },
+            { id: "w_ter_um_dragao", emoji: "🐉", titulo: "ter um dragão", cor: "#b5651e", descricao: "Melhor amigo voador", livro: false, raro: true },
+            { id: "w_paz", emoji: "🕊️", titulo: "paz no mundo", cor: "#aaccaa", descricao: "Sem guerras, só amor", livro: false, raro: true },
+            { id: "w_sonhar", emoji: "🌙", titulo: "sonhar acordado", cor: "#c29acc", descricao: "Imaginar mundos incríveis", livro: false, raro: false }
         ];
         
-        const countSpan = document.getElementById('vontadeCount');
-        const msgDiv = document.getElementById('mensagemPoetica');
-        
-        const bolsa = {
-            x: width/2,
-            y: height - 70,
-            radius: 54,
-            brilhoAtivo: 0
-        };
-        
-        const frasesBoas = [
-            "Guardou na bolsa amarela! 💛", "Essa vontade é sua!", "A bolsa acolheu ✨",
-            "Ninguém vai tirar.", "Livre pra querer! 🌻", "Que tesouro!",
-            "Ela sorriu.", "Mais uma vontade segura.", "Obrigada por guardar."
+        // Personagens do livro (6) - também podem repetir depois do final
+        const personagensLivro = [
+            { id: "p_afonso", emoji: "🐔", titulo: "Afonso", cor: "#e3a05e", descricao: "Galo que fugiu do galinheiro. Melhor amigo de Raquel.", livro: true, raro: false },
+            { id: "p_terrivel", emoji: "⚔️🐔", titulo: "Terrível", cor: "#bc7a3a", descricao: "Primo de Afonso, galo de briga, mas de bom coração.", livro: true, raro: false },
+            { id: "p_guarda", emoji: "☂️", titulo: "Guarda-chuva", cor: "#6d8f9e", descricao: "Fala uma língua estranha e abriga as vontades.", livro: true, raro: false },
+            { id: "p_alfinete", emoji: "📌", titulo: "Alfinete", cor: "#bbaa77", descricao: "Pequeno, pontudo, ajuda a prender as vontades.", livro: true, raro: false },
+            { id: "p_cartas", emoji: "✉️", titulo: "Cartas", cor: "#e8c48a", descricao: "Cartas que Raquel escreve para si mesma.", livro: true, raro: false },
+            { id: "p_desenhos", emoji: "🎨", titulo: "Desenhos", cor: "#d99e4e", descricao: "Ganham vida dentro da bolsa.", livro: true, raro: false }
         ];
         
-        // Mensagem permanente até clique
-        function setMensagemPermanente(texto, cor = "#8b5a2b") {
-            mensagemAtual = `💭 “${texto}”`;
-            msgDiv.innerHTML = mensagemAtual;
-            msgDiv.style.color = cor;
+        const bolsa = { x: width/2, y: height - 70, radius: 54, brilhoAtivo: 0 };
+        
+        function getCurrentList() {
+            return currentMode === 'wishes' ? listaVontades : personagensLivro;
         }
         
-        function avancarMensagem() {
-            // Se a mensagem atual for a padrão, não muda; se for uma mensagem especial, volta para a padrão
-            if(mensagemAtual.includes("Toque nos desejos")) {
-                // mostra uma dica alternativa
-                const dicas = [
-                    "✨ Toque nos círculos coloridos ✨",
-                    "👜 Cada desejo vai voar pra bolsa!",
-                    "🌟 Você pode guardar quantas vontades quiser",
-                    "💛 A bolsa aceita tudo o que você quer"
-                ];
-                const nova = dicas[Math.floor(Math.random() * dicas.length)];
-                setMensagemPermanente(nova, "#a5713a");
-            } else {
-                setMensagemPermanente("Toque nos desejos que flutuam", "#8b5a2b");
+        // Verifica quantas das 3 (ou 6) do livro já foram coletadas PELA PRIMEIRA VEZ
+        function getLivroColetadosCount() {
+            const lista = getCurrentList();
+            const livroIds = lista.filter(item => item.livro === true).map(item => item.id);
+            let count = 0;
+            for(let id of livroIds) {
+                if(livroColetadosIds.has(id)) count++;
+            }
+            return count;
+        }
+        
+        function updateProgressUI() {
+            const totalLivro = (currentMode === 'wishes' ? 3 : 6);
+            const coletados = getLivroColetadosCount();
+            const percent = (coletados / totalLivro) * 100;
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('specialBadge').innerHTML = `📖 ${coletados}/${totalLivro}`;
+            document.getElementById('totalCount').innerText = totalColetado;
+            document.getElementById('modoLabel').innerHTML = currentMode === 'wishes' ? 'desejo(s)' : 'personagem(ns)';
+            
+            // Final especial: só acontece uma vez, quando completa os itens do livro pela PRIMEIRA vez
+            if(coletados === totalLivro && !finalEspecialJaAconteceu && totalLivro > 0) {
+                finalEspecialJaAconteceu = true;
+                triggerFinalSpecial();
             }
         }
         
-        function updateUI() {
-            countSpan.innerText = vontadesGuardadas;
+        function triggerFinalSpecial() {
+            let mensagemFinal = "";
+            if(currentMode === 'wishes') {
+                mensagemFinal = "Você guardou as três vontades de Raquel: escrever, crescer e ser menino. A bolsa pesa de alegria! ✨ Agora ela sabe que todas as vontades são importantes — e você pode continuar guardando quantas quiser! 💛";
+            } else {
+                mensagemFinal = "Todos os amigos especiais estão dentro da bolsa! Afonso, Terrível, Guarda-chuva, Alfinete, Cartas e Desenhos. Raquel nunca mais se sente sozinha. E você pode continuar brincando com eles para sempre! 🌟";
+            }
+            
+            const finalDiv = document.createElement('div');
+            finalDiv.className = 'final-screen';
+            finalDiv.innerHTML = `
+                <div class="final-card">
+                    <h2>🏆 FINAL ESPECIAL 🏆</h2>
+                    <p>${mensagemFinal}</p>
+                    <button id="closeFinalBtn">Continuar jogando 🌼</button>
+                </div>
+            `;
+            document.body.appendChild(finalDiv);
+            document.getElementById('closeFinalBtn').addEventListener('click', () => finalDiv.remove());
         }
         
-        function spawnVontade() {
-            if(vontadesAtivas.length >= MAX_VONTADES_TELA) return;
-            const idx = Math.floor(Math.random() * listaVontades.length);
-            const obj = listaVontades[idx];
+        function spawnItem() {
+            const lista = getCurrentList();
+            // SORTEIA QUALQUER ITEM DA LISTA (PODE REPETIR!)
+            const obj = lista[Math.floor(Math.random() * lista.length)];
             const radius = 34;
             const x = 45 + Math.random() * (width - 90);
             const y = -radius - Math.random() * 60;
             const vy = 0.65 + Math.random() * 1.0;
-            vontadesAtivas.push({
-                x, y, radius,
+            floatingItems.push({
+                x, y, radius, vy,
                 emoji: obj.emoji,
                 titulo: obj.titulo,
-                vy: vy,
                 corFundo: obj.cor,
-                id: Math.random()
+                id: obj.id,
+                descricao: obj.descricao,
+                livro: obj.livro,
+                raro: obj.raro || false
             });
         }
         
         function updateMovimento() {
-            // Atualiza vontades comuns
-            for(let i = 0; i < vontadesAtivas.length; i++) {
-                const v = vontadesAtivas[i];
-                v.y += v.vy;
-                if(v.y - v.radius > height + 70 || v.y + v.radius < -70) {
-                    vontadesAtivas.splice(i,1);
+            for(let i=0; i<floatingItems.length; i++) {
+                floatingItems[i].y += floatingItems[i].vy;
+                if(floatingItems[i].y - floatingItems[i].radius > height + 70 ||
+                   floatingItems[i].y + floatingItems[i].radius < -70) {
+                    floatingItems.splice(i,1);
                     i--;
                 }
             }
-            
-            // Atualiza desejos voando
-            for(let i = 0; i < desejosVoando.length; i++) {
-                const d = desejosVoando[i];
+            for(let i=0; i<flyingItems.length; i++) {
+                const d = flyingItems[i];
                 d.progresso += d.velocidade;
                 if(d.progresso >= 1) {
-                    // chegou na bolsa!
-                    desejosVoando.splice(i,1);
+                    flyingItems.splice(i,1);
                     i--;
                     bolsa.brilhoAtivo = 15;
                 } else {
-                    // interpola posição
                     d.x = d.startX + (d.targetX - d.startX) * d.progresso;
                     d.y = d.startY + (d.targetY - d.startY) * d.progresso;
                 }
             }
         }
         
-        function guardarDesejo(v, idx) {
-            const frase = frasesBoas[Math.floor(Math.random() * frasesBoas.length)];
-            setMensagemPermanente(`${v.titulo}: ${frase}`, "#c07a3a");
+        function setMensagem(texto, cor = "#8b5a2b", extra = "") {
+            document.getElementById('mensagemPoetica').innerHTML = `💭 “${texto}”${extra ? `<div class="character-hint">✨ ${extra}</div>` : '<div class="character-hint"></div>'}`;
+            document.getElementById('mensagemPoetica').style.color = cor;
+        }
+        
+        function coletarItem(item, idx) {
+            // Aumenta contagem total SEMPRE
+            totalColetado++;
             
-            // Cria efeito de voo
-            desejosVoando.push({
-                startX: v.x,
-                startY: v.y,
-                targetX: bolsa.x,
-                targetY: bolsa.y - 15,
-                emoji: v.emoji,
+            // Se for item do livro e AINDA não foi coletado antes, registra para o progresso
+            let isNewLivro = false;
+            if(item.livro && !livroColetadosIds.has(item.id)) {
+                livroColetadosIds.add(item.id);
+                isNewLivro = true;
+            }
+            
+            let frases = [];
+            if(item.raro) {
+                frases = ["🌟 RARO! Um desejo especial! 🌟", "✨ Você encontrou um tesouro! ✨", "⭐ Este desejo é mágico! ⭐"];
+            } else {
+                frases = currentMode === 'wishes' 
+                    ? ["Guardou na bolsa amarela! 💛", "Essa vontade é sua!", "A bolsa acolheu ✨", "Livre pra querer! 🌻"]
+                    : ["Entrou na bolsa! 👜", "Agora faz parte da família!", "Que amigo especial ✨"];
+            }
+            const frase = frases[Math.floor(Math.random() * frases.length)];
+            const extraLivro = (item.livro && isNewLivro) ? " (NOVA do livro!)" : (item.livro ? " (do livro)" : "");
+            const raroTexto = item.raro ? " ⭐ RARO! ⭐" : "";
+            setMensagem(`${item.titulo}: ${frase}${extraLivro}${raroTexto}`, item.raro ? "#c97e2a" : "#c07a3a", item.descricao);
+            
+            flyingItems.push({
+                startX: item.x, startY: item.y,
+                targetX: bolsa.x, targetY: bolsa.y - 15,
+                emoji: item.emoji,
                 progresso: 0,
-                velocidade: 0.05 // 20 frames até chegar
+                velocidade: 0.06
             });
             
-            vontadesGuardadas++;
-            updateUI();
-            vontadesAtivas.splice(idx, 1);
+            floatingItems.splice(idx, 1);
+            updateProgressUI();
         }
         
         function handleCanvasClick(e) {
@@ -323,7 +461,6 @@
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
             let clientX, clientY;
-            
             if(e.touches) {
                 clientX = e.touches[0].clientX;
                 clientY = e.touches[0].clientY;
@@ -332,194 +469,137 @@
                 clientX = e.clientX;
                 clientY = e.clientY;
             }
-            
             let canvasX = (clientX - rect.left) * scaleX;
             let canvasY = (clientY - rect.top) * scaleY;
-            
             if(canvasX < 0 || canvasX > width || canvasY < 0 || canvasY > height) return;
             
-            // Verifica clique em desejos
-            for(let i = 0; i < vontadesAtivas.length; i++) {
-                const v = vontadesAtivas[i];
-                const dx = canvasX - v.x;
-                const dy = canvasY - v.y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if(dist < v.radius) {
-                    guardarDesejo(v, i);
+            for(let i=0; i<floatingItems.length; i++) {
+                const v = floatingItems[i];
+                const dx = canvasX - v.x, dy = canvasY - v.y;
+                if(Math.hypot(dx, dy) < v.radius) {
+                    coletarItem(v, i);
                     return;
                 }
             }
-            
-            // Clicou fora: mensagem amigável
-            setMensagemPermanente("Toque nos círculos coloridos e veja a mágica! 🎈", "#b47c48");
+            setMensagem("Toque nos itens flutuantes e guarde na bolsa!", "#b47c48", "");
         }
         
+        function resetGame() {
+            livroColetadosIds.clear();
+            totalColetado = 0;
+            floatingItems = [];
+            flyingItems = [];
+            finalEspecialJaAconteceu = false;
+            for(let i=0; i<4; i++) spawnItem();
+            updateProgressUI();
+            setMensagem(`Nova bolsa! Modo: ${currentMode === 'wishes' ? 'Desejos' : 'Personagens'} 🌼`, "#b28046", "");
+        }
+        
+        function switchMode(mode) {
+            currentMode = mode;
+            resetGame();
+            document.getElementById('modoVontadesBtn').classList.toggle('active', mode === 'wishes');
+            document.getElementById('modoPersonagensBtn').classList.toggle('active', mode === 'characters');
+        }
+        
+        // Desenhos (mantido)
         function drawBag() {
             ctx.shadowBlur = 10;
-            ctx.shadowColor = "rgba(0,0,0,0.15)";
             ctx.beginPath();
             ctx.ellipse(bolsa.x, bolsa.y, bolsa.radius, bolsa.radius*0.85, 0, 0, Math.PI*2);
-            ctx.fillStyle = "#f7c56e";
-            ctx.fill();
+            ctx.fillStyle = "#f7c56e"; ctx.fill();
             ctx.fillStyle = "#e5b04b";
-            ctx.beginPath();
-            ctx.ellipse(bolsa.x-6, bolsa.y-8, 11, 9, 0, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(bolsa.x+6, bolsa.y-8, 11, 9, 0, 0, Math.PI*2);
-            ctx.fill();
-            
-            ctx.beginPath();
-            ctx.ellipse(bolsa.x, bolsa.y-28, 34, 16, 0, 0, Math.PI*2);
-            ctx.fillStyle = "#db9f48";
-            ctx.fill();
-            ctx.beginPath();
-            ctx.ellipse(bolsa.x, bolsa.y-28, 25, 9, 0, 0, Math.PI*2);
-            ctx.fillStyle = "#f7cd88";
-            ctx.fill();
-            
-            ctx.fillStyle = "#ffdb9e";
-            ctx.beginPath();
-            ctx.ellipse(bolsa.x, bolsa.y-6, 18, 11, 0, 0, Math.PI*2);
-            ctx.fill();
-            
+            ctx.beginPath(); ctx.ellipse(bolsa.x-6, bolsa.y-8, 11, 9, 0, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(bolsa.x+6, bolsa.y-8, 11, 9, 0, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(bolsa.x, bolsa.y-28, 34, 16, 0, 0, Math.PI*2);
+            ctx.fillStyle = "#db9f48"; ctx.fill();
+            ctx.beginPath(); ctx.ellipse(bolsa.x, bolsa.y-6, 18, 11, 0, 0, Math.PI*2);
+            ctx.fillStyle = "#ffdb9e"; ctx.fill();
             if(bolsa.brilhoAtivo > 0) {
-                ctx.beginPath();
-                ctx.ellipse(bolsa.x+12, bolsa.y-14, 12, 8, 0, 0, Math.PI*2);
-                ctx.fillStyle = "#fff5cf";
-                ctx.fill();
+                ctx.beginPath(); ctx.ellipse(bolsa.x+12, bolsa.y-14, 12, 8, 0, 0, Math.PI*2);
+                ctx.fillStyle = "#fff5cf"; ctx.fill();
                 bolsa.brilhoAtivo--;
-                // brilho extra
-                ctx.beginPath();
-                ctx.ellipse(bolsa.x-10, bolsa.y-10, 8, 6, 0, 0, Math.PI*2);
-                ctx.fill();
             }
-            
             ctx.fillStyle = "#6b3f1c";
-            ctx.beginPath();
-            ctx.arc(bolsa.x-16, bolsa.y-6, 3.8, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(bolsa.x+16, bolsa.y-6, 3.8, 0, Math.PI*2);
-            ctx.fill();
-            ctx.fillStyle = "#ffffff";
-            ctx.beginPath();
-            ctx.arc(bolsa.x-17.5, bolsa.y-8, 1.5, 0, Math.PI*2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(bolsa.x+14.5, bolsa.y-8, 1.5, 0, Math.PI*2);
-            ctx.fill();
-            
-            ctx.beginPath();
-            ctx.arc(bolsa.x, bolsa.y+3, 10, 0.05, Math.PI - 0.05);
-            ctx.strokeStyle = "#8b5a2b";
-            ctx.lineWidth = 2.2;
-            ctx.stroke();
+            ctx.beginPath(); ctx.arc(bolsa.x-16, bolsa.y-6, 3.8, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(bolsa.x+16, bolsa.y-6, 3.8, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#fff";
+            ctx.beginPath(); ctx.arc(bolsa.x-17.5, bolsa.y-8, 1.5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(bolsa.x+14.5, bolsa.y-8, 1.5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(bolsa.x, bolsa.y+3, 10, 0.05, Math.PI - 0.05);
+            ctx.strokeStyle = "#8b5a2b"; ctx.lineWidth = 2.2; ctx.stroke();
             ctx.shadowBlur = 0;
         }
         
-        function drawVontades() {
-            // desenha desejos normais
-            for(let v of vontadesAtivas) {
+        function drawItems() {
+            for(let v of floatingItems) {
                 ctx.shadowBlur = 5;
-                ctx.beginPath();
-                ctx.arc(v.x, v.y, v.radius-3, 0, Math.PI*2);
-                ctx.fillStyle = v.corFundo + "cc";
-                ctx.fill();
-                ctx.beginPath();
-                ctx.arc(v.x, v.y, v.radius-6, 0, Math.PI*2);
-                ctx.fillStyle = "#fff5e0";
-                ctx.fill();
-                ctx.font = `${Math.floor(v.radius * 0.75)}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
-                ctx.fillStyle = "#2d2418";
+                ctx.beginPath(); ctx.arc(v.x, v.y, v.radius-3, 0, Math.PI*2);
+                ctx.fillStyle = v.corFundo + "cc"; ctx.fill();
+                ctx.beginPath(); ctx.arc(v.x, v.y, v.radius-6, 0, Math.PI*2);
+                ctx.fillStyle = v.raro ? "#ffe6b3" : "#fff5e0"; ctx.fill();
+                ctx.font = `26px "Segoe UI Emoji"`; ctx.fillStyle = "#2d2418";
                 ctx.fillText(v.emoji, v.x-16, v.y+12);
-                ctx.font = `bold 11px "Quicksand", system-ui`;
-                ctx.fillStyle = "#4a311c";
-                ctx.fillText(v.titulo, v.x-22, v.y+30);
+                ctx.font = `bold 10px "Quicksand"`; ctx.fillStyle = "#4a311c";
+                let tituloReduzido = v.titulo.length > 12 ? v.titulo.slice(0,10)+".." : v.titulo;
+                ctx.fillText(tituloReduzido, v.x-22, v.y+30);
+                if(v.raro) {
+                    ctx.fillStyle = "#ffaa33";
+                    ctx.fillText("⭐", v.x+15, v.y-10);
+                }
             }
-            
-            // desenha desejos voando
-            for(let d of desejosVoando) {
+            for(let d of flyingItems) {
                 ctx.shadowBlur = 8;
-                ctx.beginPath();
-                ctx.arc(d.x, d.y, 22, 0, Math.PI*2);
-                ctx.fillStyle = "#ffdd99cc";
-                ctx.fill();
-                ctx.font = `28px "Segoe UI Emoji", "Apple Color Emoji"`;
+                ctx.beginPath(); ctx.arc(d.x, d.y, 22, 0, Math.PI*2);
+                ctx.fillStyle = "#ffdd99cc"; ctx.fill();
+                ctx.font = `28px "Segoe UI Emoji"`;
                 ctx.fillStyle = "#5c3e1f";
                 ctx.fillText(d.emoji, d.x-14, d.y+10);
-                // rastro de estrelas
-                ctx.fillStyle = "#ffcc66";
                 for(let s=0;s<3;s++) {
-                    ctx.beginPath();
-                    ctx.arc(d.x - 8 + s*8, d.y-5, 2, 0, Math.PI*2);
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(d.x - 8 + s*8, d.y-5, 2, 0, Math.PI*2);
+                    ctx.fillStyle = "#ffcc66"; ctx.fill();
                 }
             }
             ctx.shadowBlur = 0;
         }
         
         function drawBackground() {
-            ctx.fillStyle = "#fdebb3";
-            ctx.fillRect(0,0,width,height);
-            ctx.fillStyle = "#f3cf93";
-            ctx.fillRect(0, height-38, width, 38);
+            ctx.fillStyle = "#fdebb3"; ctx.fillRect(0,0,width,height);
+            ctx.fillStyle = "#f3cf93"; ctx.fillRect(0, height-38, width, 38);
             for(let i=0;i<14;i++) {
                 ctx.fillStyle = "#ffdd99";
-                ctx.beginPath();
-                ctx.arc(28 + i*42, height-28, 5, 0, Math.PI*2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(28 + i*42, height-28, 5, 0, Math.PI*2); ctx.fill();
                 ctx.fillStyle = "#ffb347";
-                ctx.beginPath();
-                ctx.arc(28 + i*42, height-28, 2.2, 0, Math.PI*2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(28 + i*42, height-28, 2.2, 0, Math.PI*2); ctx.fill();
             }
         }
         
         function animate() {
             frames++;
-            if(frames % SPAWN_RATE === 0 && vontadesAtivas.length < MAX_VONTADES_TELA) {
-                spawnVontade();
+            // Spawn contínuo e infinito (nunca para)
+            if(frames % 75 === 0 && floatingItems.length < 6) {
+                spawnItem();
             }
             updateMovimento();
             drawBackground();
-            drawVontades();
+            drawItems();
             drawBag();
-            
-            ctx.font = "italic 12px 'Quicksand'";
-            ctx.fillStyle = "#b87c48";
-            ctx.shadowBlur = 0;
-            ctx.fillText("✨ toque nos desejos ✨", 20, 32);
-            
+            ctx.font = "italic 10px 'Quicksand'"; ctx.fillStyle = "#b87c48";
+            ctx.fillText(currentMode === 'wishes' ? "✨ infinitos desejos flutuam ✨" : "🐔 personagens flutuam 🐔", 20, 28);
             animationId = requestAnimationFrame(animate);
         }
         
-        // Eventos
         canvas.addEventListener('click', handleCanvasClick);
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            const touch = e.touches[0];
-            handleCanvasClick({ clientX: touch.clientX, clientY: touch.clientY, touches: null });
+            handleCanvasClick({ clientX: e.touches[0].clientX, clientY: e.touches[0].clientY, touches: null });
         });
+        document.getElementById('mensagemPoetica').addEventListener('click', () => setMensagem("Toque nos itens flutuantes!", "#8b5a2b", ""));
+        document.getElementById('resetBtn').addEventListener('click', resetGame);
+        document.getElementById('modoVontadesBtn').addEventListener('click', () => switchMode('wishes'));
+        document.getElementById('modoPersonagensBtn').addEventListener('click', () => switchMode('characters'));
         
-        // Clique na mensagem avança
-        msgDiv.addEventListener('click', avancarMensagem);
-        msgDiv.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            avancarMensagem();
-        });
-        
-        document.getElementById('resetBtn').addEventListener('click', () => {
-            vontadesGuardadas = 0;
-            vontadesAtivas = [];
-            desejosVoando = [];
-            updateUI();
-            setMensagemPermanente("Nova bolsa amarela! Vontades renascem 🌼", "#b28046");
-            for(let i=0;i<3;i++) spawnVontade();
-        });
-        
-        for(let i=0;i<3;i++) spawnVontade();
-        updateUI();
+        resetGame();
         animate();
     })();
 </script>

@@ -2,12 +2,13 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>✨ A Bolsa Amarela — Guarde suas vontades ✨</title>
     <style>
         * {
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
         }
 
         body {
@@ -18,89 +19,82 @@
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Comic Neue', cursive;
-            padding: 20px;
+            padding: 12px;
         }
 
         .game-wrapper {
             background: #fff8e7;
-            border-radius: 72px;
-            padding: 20px 25px 30px 25px;
-            box-shadow: 0 25px 40px rgba(0,0,0,0.2), inset 0 1px 4px rgba(255,245,200,0.8);
+            border-radius: 48px;
+            padding: 16px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.2), inset 0 1px 4px rgba(255,245,200,0.8);
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .title {
+            text-align: center;
+            font-size: clamp(1.3rem, 6vw, 1.8rem);
+            font-weight: bold;
+            color: #b45f2b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .title span {
+            font-size: clamp(1.6rem, 7vw, 2.2rem);
         }
 
         canvas {
             display: block;
             margin: 0 auto;
-            border-radius: 48px;
+            border-radius: 32px;
             background: #fef0cf;
             cursor: pointer;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            width: 100%;
+            height: auto;
+            aspect-ratio: 550 / 450;
         }
 
-        .title {
-            text-align: center;
-            font-size: 1.7rem;
-            font-weight: bold;
-            color: #b45f2b;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .title span {
-            font-size: 2rem;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #fae6b3;
-            padding: 10px 20px;
-            border-radius: 60px;
-            margin: 15px 5px 5px 5px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
+        /* Contador de vontades */
         .bag-counter {
             background: #f3cd81;
-            padding: 6px 18px;
-            border-radius: 40px;
+            padding: 12px 18px;
+            border-radius: 60px;
             font-weight: bold;
-            font-size: 1.4rem;
+            font-size: clamp(1.2rem, 5vw, 1.5rem);
             color: #3e2a1f;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 10px;
+            text-align: center;
+            margin: 16px 0 12px 0;
         }
 
-        .message-area {
-            background: #f7e5c2;
-            padding: 10px 20px;
-            border-radius: 32px;
-            font-style: italic;
-            font-weight: 500;
-            color: #8b5a2b;
-            flex: 1;
-            text-align: center;
-            font-size: 1rem;
+        /* Botão sozinho */
+        .button-wrapper {
+            margin-bottom: 16px;
         }
 
         button {
             background: #f3b33d;
             border: none;
-            font-size: 1.1rem;
+            font-size: clamp(1rem, 4.5vw, 1.2rem);
             font-weight: bold;
-            padding: 8px 20px;
-            border-radius: 40px;
+            padding: 14px 20px;
+            border-radius: 60px;
             cursor: pointer;
             font-family: inherit;
             transition: 0.1s linear;
             color: #2c1a0c;
             box-shadow: 0 4px 0 #a45d2a;
+            width: 100%;
         }
 
         button:active {
@@ -108,21 +102,32 @@
             box-shadow: 0 1px 0 #a45d2a;
         }
 
+        /* Área de mensagem - agora embaixo, ocupando largura total */
+        .message-area {
+            background: #f7e5c2;
+            padding: 14px 16px;
+            border-radius: 32px;
+            font-style: italic;
+            font-weight: 500;
+            color: #8b5a2b;
+            text-align: center;
+            font-size: clamp(0.85rem, 4vw, 1rem);
+            min-height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+            margin-top: 8px;
+        }
+
         .quote {
             text-align: center;
-            margin-top: 15px;
-            font-size: 0.85rem;
+            margin-top: 14px;
+            font-size: clamp(0.7rem, 3.5vw, 0.85rem);
             color: #b47c48;
             background: #fff1dd;
             border-radius: 60px;
-            padding: 6px 12px;
-        }
-
-        @media (max-width: 550px) {
-            .title { font-size: 1.3rem; }
-            .bag-counter { font-size: 1.1rem; }
-            .message-area { font-size: 0.85rem; }
-            button { font-size: 0.9rem; }
+            padding: 8px 12px;
         }
     </style>
 </head>
@@ -132,16 +137,24 @@
         <div class="title">
             <span>👜</span> A Bolsa Amarela <span>✨</span>
         </div>
-        <canvas id="bagCanvas" width="550" height="450"></canvas>
-        <div class="stats">
-            <div class="bag-counter">
-                🧡 Vontades guardadas: <span id="vontadeCount">0</span>
-            </div>
-            <div class="message-area" id="mensagemPoetica">
-                “Toda vontade precisa de um lugar”
-            </div>
+        
+        <canvas id="bagCanvas" width="550" height="450" style="width:100%; height:auto; aspect-ratio:550/450"></canvas>
+        
+        <!-- Contador sozinho -->
+        <div class="bag-counter">
+            🧡 <span id="vontadeCount">0</span> vontade(s)
+        </div>
+        
+        <!-- Botão sozinho -->
+        <div class="button-wrapper">
             <button id="resetBtn">🌼 Nova Bolsa</button>
         </div>
+        
+        <!-- Mensagem embaixo de tudo -->
+        <div class="message-area" id="mensagemPoetica">
+            💭 “Toque nas vontades que flutuam”
+        </div>
+        
         <div class="quote">
             📖 inspirado em "A Bolsa Amarela" — Lygia Bojunga 🌟
         </div>
@@ -150,83 +163,77 @@
 
 <script>
     (function(){
-        // CONFIGURAÇÕES
         const canvas = document.getElementById('bagCanvas');
         const ctx = canvas.getContext('2d');
-        const width = 550, height = 450;
+        
+        const width = 550;
+        const height = 450;
         canvas.width = width;
         canvas.height = height;
         
-        // Estado do jogo
         let vontadesGuardadas = 0;
-        let vontadesAtivas = []; // cada vontade = { x, y, emoji, titulo, radius, vy }
+        let vontadesAtivas = [];
         let frames = 0;
         let animationId = null;
         
-        // Limite de vontades na tela (flutuando)
-        const MAX_VONTADES_TELA = 8;
-        const SPAWN_RATE = 90; // quadros entre spawns
+        const MAX_VONTADES_TELA = 6;
+        const SPAWN_RATE = 95;
         
-        // Lista de vontades possíveis (coisas que crianças guardam na bolsa)
         const listaVontades = [
             { emoji: "🐺", titulo: "ser lobo", cor: "#b87c4f" },
             { emoji: "✈️", titulo: "voar", cor: "#6aa3b4" },
-            { emoji: "📖", titulo: "escrever histórias", cor: "#e3b87c" },
-            { emoji: "🎨", titulo: "pintar o mundo", cor: "#d99e4e" },
-            { emoji: "🌊", titulo: "morar no mar", cor: "#5f9db2" },
-            { emoji: "🚀", titulo: "ir pra lua", cor: "#b39f7a" },
-            { emoji: "🎭", titulo: "ser outra pessoa", cor: "#c2847a" },
+            { emoji: "📖", titulo: "escrever", cor: "#e3b87c" },
+            { emoji: "🎨", titulo: "pintar", cor: "#d99e4e" },
+            { emoji: "🌊", titulo: "mar", cor: "#5f9db2" },
+            { emoji: "🚀", titulo: "lua", cor: "#b39f7a" },
+            { emoji: "🎭", titulo: "outra pessoa", cor: "#c2847a" },
             { emoji: "🧸", titulo: "nunca crescer", cor: "#cca66b" },
-            { emoji: "🌈", titulo: "arco-íris particular", cor: "#d9ae6c" },
-            { emoji: "🔮", titulo: "ter segredos mágicos", cor: "#b189c9" },
-            { emoji: "🎪", titulo: "viver no circo", cor: "#e3a05e" },
-            { emoji: "🍰", titulo: "comer doce todo dia", cor: "#e2b56a" }
+            { emoji: "🌈", titulo: "arco-íris", cor: "#d9ae6c" },
+            { emoji: "🔮", titulo: "magia", cor: "#b189c9" },
+            { emoji: "🎪", titulo: "circo", cor: "#e3a05e" },
+            { emoji: "🍰", titulo: "doce", cor: "#e2b56a" },
+            { emoji: "⭐", titulo: "ser estrela", cor: "#efc47c" },
+            { emoji: "🎵", titulo: "cantar", cor: "#c9a87b" }
         ];
         
-        // Elementos da UI
         const countSpan = document.getElementById('vontadeCount');
         const msgDiv = document.getElementById('mensagemPoetica');
         
-        // Bolsa amarela (área clicável / alvo)
         const bolsa = {
             x: width/2,
-            y: height - 85,
-            radius: 60,
-            corInterna: "#ffcd7e",
-            corBrilho: "#ffb347"
+            y: height - 70,
+            radius: 54,
+            brilhoAtivo: 0
         };
         
-        // Mensagens poéticas (feedback)
         const frasesBoas = [
-            "Guardou no fundo da bolsa! 👜", "Essa vontade é sua! 💛", "Que alívio... cabe mais uma!",
-            "A bolsa ficou mais leve ✨", "Ela sorriu.", "Ninguém vai tirar essa vontade.",
-            "Livre pra querer! 🌻", "A vontade descansou.", "A bolsa amarela acolheu."
+            "Guardou na bolsa amarela! 💛", "Essa vontade é sua!", "A bolsa acolheu ✨",
+            "Ninguém vai tirar.", "Livre pra querer! 🌻", "Que tesouro!",
+            "Ela sorriu.", "Mais uma vontade segura.", "Obrigada por guardar."
         ];
         
         function showMessage(texto, cor = "#8b5a2b") {
             msgDiv.innerHTML = `💭 “${texto}”`;
-            msgDiv.style.transition = "0.2s";
             msgDiv.style.color = cor;
             setTimeout(() => {
                 if(msgDiv.innerHTML === `💭 “${texto}”`)
-                    msgDiv.innerHTML = `✨ A bolsa está com você ✨`;
+                    msgDiv.innerHTML = `💭 “Toque nas vontades que flutuam”`;
                 msgDiv.style.color = "#8b5a2b";
-            }, 1800);
+            }, 2200);
         }
         
         function updateUI() {
             countSpan.innerText = vontadesGuardadas;
         }
         
-        // Criar nova vontade flutuante
         function spawnVontade() {
             if(vontadesAtivas.length >= MAX_VONTADES_TELA) return;
             const idx = Math.floor(Math.random() * listaVontades.length);
             const obj = listaVontades[idx];
-            const radius = 32;
-            const x = 40 + Math.random() * (width - 80);
-            const y = -radius - Math.random() * 50;
-            const vy = 0.7 + Math.random() * 1.2;
+            const radius = 34;
+            const x = 45 + Math.random() * (width - 90);
+            const y = -radius - Math.random() * 60;
+            const vy = 0.65 + Math.random() * 1.0;
             vontadesAtivas.push({
                 x, y, radius,
                 emoji: obj.emoji,
@@ -236,21 +243,18 @@
             });
         }
         
-        // Atualizar física (flutuar pra baixo)
         function updateMovimento() {
             for(let i = 0; i < vontadesAtivas.length; i++) {
                 const v = vontadesAtivas[i];
                 v.y += v.vy;
-                // se sumiu da tela ou passou do fundo sem ser guardada, remove
-                if(v.y - v.radius > height + 60 || v.y + v.radius < -60) {
+                if(v.y - v.radius > height + 70 || v.y + v.radius < -70) {
                     vontadesAtivas.splice(i,1);
                     i--;
                 }
             }
         }
         
-        // Verifica clique na bolsa ou nas vontades? A mecânica: clicar na vontade guarda na bolsa
-        function handleClick(e) {
+        function handleCanvasClick(e) {
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;
             const scaleY = canvas.height / rect.height;
@@ -270,186 +274,156 @@
             
             if(canvasX < 0 || canvasX > width || canvasY < 0 || canvasY > height) return;
             
-            // Verifica se clicou em alguma vontade (círculo)
             for(let i = 0; i < vontadesAtivas.length; i++) {
                 const v = vontadesAtivas[i];
                 const dx = canvasX - v.x;
                 const dy = canvasY - v.y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
                 if(dist < v.radius) {
-                    // Guardou a vontade!
                     vontadesGuardadas++;
                     updateUI();
                     const frase = frasesBoas[Math.floor(Math.random() * frasesBoas.length)];
-                    showMessage(`Guardou: ${v.titulo}. ${frase}`, "#c07a3a");
-                    // efeito visual: remove essa vontade
+                    showMessage(`${v.titulo}: ${frase}`, "#c07a3a");
                     vontadesAtivas.splice(i,1);
-                    
-                    // Pequeno brilho na bolsa
-                    bolsa.brilhoAtivo = 10;
+                    bolsa.brilhoAtivo = 12;
                     return;
                 }
             }
-            
-            // clicou em lugar vazio - mensagem carinhosa
-            showMessage("Clique nas vontades que flutuam e coloque dentro da bolsa amarela!", "#b47c48");
+            showMessage("Toque nos círculos flutuantes e guarde na bolsa!", "#b47c48");
         }
         
-        // Desenho da bolsa amarela (estilo fofo)
         function drawBag() {
-            // sombra
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = "rgba(0,0,0,0.2)";
-            // corpo da bolsa
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = "rgba(0,0,0,0.15)";
             ctx.beginPath();
-            ctx.ellipse(bolsa.x, bolsa.y, bolsa.radius, bolsa.radius*0.9, 0, 0, Math.PI*2);
+            ctx.ellipse(bolsa.x, bolsa.y, bolsa.radius, bolsa.radius*0.85, 0, 0, Math.PI*2);
             ctx.fillStyle = "#f7c56e";
             ctx.fill();
             ctx.fillStyle = "#e5b04b";
             ctx.beginPath();
-            ctx.ellipse(bolsa.x-5, bolsa.y-8, 12, 10, 0, 0, Math.PI*2);
+            ctx.ellipse(bolsa.x-6, bolsa.y-8, 11, 9, 0, 0, Math.PI*2);
             ctx.fill();
             ctx.beginPath();
-            ctx.ellipse(bolsa.x+5, bolsa.y-8, 12, 10, 0, 0, Math.PI*2);
+            ctx.ellipse(bolsa.x+6, bolsa.y-8, 11, 9, 0, 0, Math.PI*2);
             ctx.fill();
             
-            // alça
             ctx.beginPath();
-            ctx.ellipse(bolsa.x, bolsa.y-26, 35, 18, 0, 0, Math.PI*2);
+            ctx.ellipse(bolsa.x, bolsa.y-28, 34, 16, 0, 0, Math.PI*2);
             ctx.fillStyle = "#db9f48";
             ctx.fill();
             ctx.beginPath();
-            ctx.ellipse(bolsa.x, bolsa.y-26, 26, 10, 0, 0, Math.PI*2);
+            ctx.ellipse(bolsa.x, bolsa.y-28, 25, 9, 0, 0, Math.PI*2);
             ctx.fillStyle = "#f7cd88";
             ctx.fill();
             
-            // detalhe do zíper ou brilho
             ctx.fillStyle = "#ffdb9e";
             ctx.beginPath();
-            ctx.ellipse(bolsa.x, bolsa.y-5, 20, 12, 0, 0, Math.PI*2);
+            ctx.ellipse(bolsa.x, bolsa.y-6, 18, 11, 0, 0, Math.PI*2);
             ctx.fill();
             
             if(bolsa.brilhoAtivo > 0) {
                 ctx.beginPath();
-                ctx.ellipse(bolsa.x+10, bolsa.y-12, 12, 8, 0, 0, Math.PI*2);
-                ctx.fillStyle = "#fff0b5";
+                ctx.ellipse(bolsa.x+12, bolsa.y-14, 12, 8, 0, 0, Math.PI*2);
+                ctx.fillStyle = "#fff5cf";
                 ctx.fill();
                 bolsa.brilhoAtivo--;
             }
             
-            // rosto da bolsa? olhos simpáticos
             ctx.fillStyle = "#6b3f1c";
             ctx.beginPath();
-            ctx.arc(bolsa.x-18, bolsa.y-6, 4, 0, Math.PI*2);
+            ctx.arc(bolsa.x-16, bolsa.y-6, 3.8, 0, Math.PI*2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(bolsa.x+18, bolsa.y-6, 4, 0, Math.PI*2);
+            ctx.arc(bolsa.x+16, bolsa.y-6, 3.8, 0, Math.PI*2);
             ctx.fill();
             ctx.fillStyle = "#ffffff";
             ctx.beginPath();
-            ctx.arc(bolsa.x-19, bolsa.y-8, 1.5, 0, Math.PI*2);
+            ctx.arc(bolsa.x-17.5, bolsa.y-8, 1.5, 0, Math.PI*2);
             ctx.fill();
             ctx.beginPath();
-            ctx.arc(bolsa.x+17, bolsa.y-8, 1.5, 0, Math.PI*2);
+            ctx.arc(bolsa.x+14.5, bolsa.y-8, 1.5, 0, Math.PI*2);
             ctx.fill();
-            // sorriso
-            ctx.beginPath();
-            ctx.arc(bolsa.x, bolsa.y+2, 12, 0.05, Math.PI - 0.05);
-            ctx.strokeStyle = "#8b5a2b";
-            ctx.lineWidth = 2;
-            ctx.stroke();
             
+            ctx.beginPath();
+            ctx.arc(bolsa.x, bolsa.y+3, 10, 0.05, Math.PI - 0.05);
+            ctx.strokeStyle = "#8b5a2b";
+            ctx.lineWidth = 2.2;
+            ctx.stroke();
             ctx.shadowBlur = 0;
         }
         
         function drawVontades() {
             for(let v of vontadesAtivas) {
-                ctx.shadowBlur = 6;
+                ctx.shadowBlur = 5;
                 ctx.beginPath();
-                ctx.arc(v.x, v.y, v.radius-2, 0, Math.PI*2);
+                ctx.arc(v.x, v.y, v.radius-3, 0, Math.PI*2);
                 ctx.fillStyle = v.corFundo + "cc";
                 ctx.fill();
                 ctx.beginPath();
-                ctx.arc(v.x, v.y, v.radius-4, 0, Math.PI*2);
-                ctx.fillStyle = "#fff3cf";
+                ctx.arc(v.x, v.y, v.radius-6, 0, Math.PI*2);
+                ctx.fillStyle = "#fff5e0";
                 ctx.fill();
-                ctx.font = `${Math.floor(v.radius * 0.85)}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
+                ctx.font = `${Math.floor(v.radius * 0.75)}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`;
                 ctx.fillStyle = "#2d2418";
-                ctx.shadowBlur = 2;
-                ctx.fillText(v.emoji, v.x-18, v.y+12);
-                ctx.font = `bold 12px "Quicksand"`;
-                ctx.fillStyle = "#3f2d1b";
-                ctx.fillText(v.titulo.substring(0,11), v.x-23, v.y+28);
+                ctx.fillText(v.emoji, v.x-16, v.y+12);
+                ctx.font = `bold 11px "Quicksand", system-ui`;
+                ctx.fillStyle = "#4a311c";
+                ctx.fillText(v.titulo, v.x-22, v.y+30);
             }
             ctx.shadowBlur = 0;
         }
         
         function drawBackground() {
-            // chão e céu
             ctx.fillStyle = "#fdebb3";
             ctx.fillRect(0,0,width,height);
-            for(let i=0; i<60;i++) {
-                ctx.fillStyle = "#f7e1a4";
-                ctx.beginPath();
-                ctx.arc( (i*37)%width, height-50 + Math.sin(Date.now()*0.001 + i)*5, 2, 0, Math.PI*2);
-                ctx.fill();
-            }
             ctx.fillStyle = "#f3cf93";
-            ctx.fillRect(0, height-45, width, 45);
-            // florzinhas
-            for(let i=0;i<12;i++) {
+            ctx.fillRect(0, height-38, width, 38);
+            for(let i=0;i<14;i++) {
                 ctx.fillStyle = "#ffdd99";
                 ctx.beginPath();
-                ctx.arc(30 + i*47, height-32, 5, 0, Math.PI*2);
+                ctx.arc(28 + i*42, height-28, 5, 0, Math.PI*2);
                 ctx.fill();
                 ctx.fillStyle = "#ffb347";
                 ctx.beginPath();
-                ctx.arc(30 + i*47, height-32, 2, 0, Math.PI*2);
+                ctx.arc(28 + i*42, height-28, 2.2, 0, Math.PI*2);
                 ctx.fill();
             }
         }
         
         function animate() {
             frames++;
-            // spawn de vontades a cada SPAWN_RATE frames
             if(frames % SPAWN_RATE === 0 && vontadesAtivas.length < MAX_VONTADES_TELA) {
                 spawnVontade();
             }
             updateMovimento();
-            
             drawBackground();
             drawVontades();
             drawBag();
             
-            // texto de dica no canvas?
-            ctx.font = "italic 14px 'Quicksand'";
-            ctx.fillStyle = "#b37942";
+            ctx.font = "italic 12px 'Quicksand'";
+            ctx.fillStyle = "#b87c48";
             ctx.shadowBlur = 0;
-            ctx.fillText("✨ clique numa vontade e arraste para a bolsa? não, só clicar nela! ✨", 20, 35);
+            ctx.fillText("✨ toque nos desejos ✨", 20, 32);
             
             animationId = requestAnimationFrame(animate);
         }
         
-        // eventos
-        canvas.addEventListener('click', handleClick);
+        canvas.addEventListener('click', handleCanvasClick);
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
-            const fakeEvent = { clientX: touch.clientX, clientY: touch.clientY };
-            handleClick(fakeEvent);
+            handleCanvasClick({ clientX: touch.clientX, clientY: touch.clientY, touches: null });
         });
         
         document.getElementById('resetBtn').addEventListener('click', () => {
             vontadesGuardadas = 0;
             vontadesAtivas = [];
             updateUI();
-            showMessage("Uma nova bolsa amarela... todas as vontades podem voltar 🌼", "#b28046");
-            for(let i=0;i<2;i++) spawnVontade();
+            showMessage("Nova bolsa amarela! Vontades renascem 🌼", "#b28046");
+            for(let i=0;i<3;i++) spawnVontade();
         });
         
-        // inicia com 2 vontades
         for(let i=0;i<3;i++) spawnVontade();
-        bolsa.brilhoAtivo = 0;
         updateUI();
         animate();
     })();

@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>✨ A Bolsa Amarela — INFINITA ✨</title>
+    <title>✨ A Bolsa Amarela — Muitas Vontades ✨</title>
     <style>
         * {
             user-select: none;
@@ -245,14 +244,7 @@
         canvas.width = width; canvas.height = height;
         
         let currentMode = 'wishes';
-        
-        // Controle de coleção (APENAS para o final especial)
-        let livroColetadosIds = new Set();   // guarda as 3 do livro (só pra saber se já pegou cada uma)
-        let finalEspecialJaAconteceu = false;
-        
-        // Todos os itens coletados (contagem total, com repetição)
-        let totalColetado = 0;
-        
+        let collectedIds = new Set();
         let floatingItems = [];
         let flyingItems = [];
         let frames = 0;
@@ -292,10 +284,8 @@
             { id: "w_biscoito", emoji: "🍪", titulo: "chover biscoito", cor: "#dbae6a", descricao: "Comer biscoito todo dia", livro: false, raro: false },
             { id: "w_sorvete", emoji: "🍦", titulo: "sorvete infinito", cor: "#f2c4a8", descricao: "Sorvete que nunca acaba", livro: false, raro: false },
             { id: "w_brincar_eternamente", emoji: "🎠", titulo: "brincar para sempre", cor: "#deaa88", descricao: "Férias eternas", livro: false, raro: false },
-            { id: "w_amizade", emoji: "🤝", titulo: "fazer amigos", cor: "#c9ae7a", descricao: "Encontrar amigos verdadeiros", livro: false, raro: false },
-            { id: "w_ajudar", emoji: "🫂", titulo: "ajudar as pessoas", cor: "#b5c48a", descricao: "Tornar o mundo melhor", livro: false, raro: false },
             
-            // Vontades canônicas do livro (3) - aparecem normal, mas o controle é separado
+            // Vontades canônicas do livro (3)
             { id: "w_escrever", emoji: "📖", titulo: "escrever", cor: "#e3b87c", descricao: "Vontade de ser escritora", livro: true, raro: false },
             { id: "w_crescer", emoji: "👧➡️👩", titulo: "crescer", cor: "#d9ae6c", descricao: "Ser respeitada como gente grande", livro: true, raro: false },
             { id: "w_menino", emoji: "♂️", titulo: "ser menino", cor: "#7cb5a3", descricao: "Ter as mesmas liberdades", livro: true, raro: false },
@@ -303,12 +293,10 @@
             // Mais sentimentos e desejos abstratos
             { id: "w_ser_feliz", emoji: "😊", titulo: "ser feliz", cor: "#f2cf66", descricao: "Acordar feliz todo dia", livro: false, raro: false },
             { id: "w_ser_abraçado", emoji: "🤗", titulo: "ganhar abraços", cor: "#e3a571", descricao: "Abraços quentinhos sempre", livro: false, raro: false },
-            { id: "w_ter_um_dragao", emoji: "🐉", titulo: "ter um dragão", cor: "#b5651e", descricao: "Melhor amigo voador", livro: false, raro: true },
-            { id: "w_paz", emoji: "🕊️", titulo: "paz no mundo", cor: "#aaccaa", descricao: "Sem guerras, só amor", livro: false, raro: true },
-            { id: "w_sonhar", emoji: "🌙", titulo: "sonhar acordado", cor: "#c29acc", descricao: "Imaginar mundos incríveis", livro: false, raro: false }
+            { id: "w_ter_um_dragao", emoji: "🐉", titulo: "ter um dragão", cor: "#b5651e", descricao: "Melhor amigo voador", livro: false, raro: true }
         ];
         
-        // Personagens do livro (6) - também podem repetir depois do final
+        // Personagens do livro (6)
         const personagensLivro = [
             { id: "p_afonso", emoji: "🐔", titulo: "Afonso", cor: "#e3a05e", descricao: "Galo que fugiu do galinheiro. Melhor amigo de Raquel.", livro: true, raro: false },
             { id: "p_terrivel", emoji: "⚔️🐔", titulo: "Terrível", cor: "#bc7a3a", descricao: "Primo de Afonso, galo de briga, mas de bom coração.", livro: true, raro: false },
@@ -318,35 +306,37 @@
             { id: "p_desenhos", emoji: "🎨", titulo: "Desenhos", cor: "#d99e4e", descricao: "Ganham vida dentro da bolsa.", livro: true, raro: false }
         ];
         
-        const bolsa = { x: width/2, y: height - 70, radius: 54, brilhoAtivo: 0 };
+        // Ajustado o Y para acomodar o formato de bolsa tiracolo pendurada
+        const bolsa = { x: width/2, y: height - 100, radius: 55, brilhoAtivo: 0 };
         
         function getCurrentList() {
             return currentMode === 'wishes' ? listaVontades : personagensLivro;
         }
         
-        // Verifica quantas das 3 (ou 6) do livro já foram coletadas PELA PRIMEIRA VEZ
-        function getLivroColetadosCount() {
+        function getTotalLivroCount() {
+            const lista = getCurrentList();
+            return lista.filter(item => item.livro === true).length;
+        }
+        
+        function getCollectedLivroCount() {
             const lista = getCurrentList();
             const livroIds = lista.filter(item => item.livro === true).map(item => item.id);
             let count = 0;
-            for(let id of livroIds) {
-                if(livroColetadosIds.has(id)) count++;
-            }
+            for(let id of livroIds) if(collectedIds.has(id)) count++;
             return count;
         }
         
         function updateProgressUI() {
-            const totalLivro = (currentMode === 'wishes' ? 3 : 6);
-            const coletados = getLivroColetadosCount();
-            const percent = (coletados / totalLivro) * 100;
+            const totalLivro = getTotalLivroCount();
+            const collectedLivro = getCollectedLivroCount();
+            const percent = (collectedLivro / totalLivro) * 100;
             document.getElementById('progressBar').style.width = percent + '%';
-            document.getElementById('specialBadge').innerHTML = `📖 ${coletados}/${totalLivro}`;
-            document.getElementById('totalCount').innerText = totalColetado;
+            document.getElementById('specialBadge').innerHTML = `📖 ${collectedLivro}/${totalLivro}`;
+            document.getElementById('totalCount').innerText = collectedIds.size;
             document.getElementById('modoLabel').innerHTML = currentMode === 'wishes' ? 'desejo(s)' : 'personagem(ns)';
             
-            // Final especial: só acontece uma vez, quando completa os itens do livro pela PRIMEIRA vez
-            if(coletados === totalLivro && !finalEspecialJaAconteceu && totalLivro > 0) {
-                finalEspecialJaAconteceu = true;
+            if(collectedLivro === totalLivro && totalLivro > 0 && !window._finalTriggered) {
+                window._finalTriggered = true;
                 triggerFinalSpecial();
             }
         }
@@ -354,9 +344,9 @@
         function triggerFinalSpecial() {
             let mensagemFinal = "";
             if(currentMode === 'wishes') {
-                mensagemFinal = "Você guardou as três vontades de Raquel: escrever, crescer e ser menino. A bolsa pesa de alegria! ✨ Agora ela sabe que todas as vontades são importantes — e você pode continuar guardando quantas quiser! 💛";
+                mensagemFinal = "Você guardou as três vontades de Raquel: escrever, crescer e ser menino. A bolsa pesa de alegria! ✨ Raquel aprendeu que suas vontades são importantes e ninguém pode apagá-las. 💛";
             } else {
-                mensagemFinal = "Todos os amigos especiais estão dentro da bolsa! Afonso, Terrível, Guarda-chuva, Alfinete, Cartas e Desenhos. Raquel nunca mais se sente sozinha. E você pode continuar brincando com eles para sempre! 🌟";
+                mensagemFinal = "Todos os amigos especiais estão dentro da bolsa! Afonso, Terrível, Guarda-chuva, Alfinete, Cartas e Desenhos. Raquel nunca mais se sente sozinha. A imaginação é o melhor lugar do mundo. 🌟";
             }
             
             const finalDiv = document.createElement('div');
@@ -374,8 +364,10 @@
         
         function spawnItem() {
             const lista = getCurrentList();
-            // SORTEIA QUALQUER ITEM DA LISTA (PODE REPETIR!)
-            const obj = lista[Math.floor(Math.random() * lista.length)];
+            const notCollected = lista.filter(item => !collectedIds.has(item.id));
+            if(notCollected.length === 0) return;
+            
+            const obj = notCollected[Math.floor(Math.random() * notCollected.length)];
             const radius = 34;
             const x = 45 + Math.random() * (width - 90);
             const y = -radius - Math.random() * 60;
@@ -421,15 +413,8 @@
         }
         
         function coletarItem(item, idx) {
-            // Aumenta contagem total SEMPRE
-            totalColetado++;
-            
-            // Se for item do livro e AINDA não foi coletado antes, registra para o progresso
-            let isNewLivro = false;
-            if(item.livro && !livroColetadosIds.has(item.id)) {
-                livroColetadosIds.add(item.id);
-                isNewLivro = true;
-            }
+            if(collectedIds.has(item.id)) return;
+            collectedIds.add(item.id);
             
             let frases = [];
             if(item.raro) {
@@ -440,13 +425,13 @@
                     : ["Entrou na bolsa! 👜", "Agora faz parte da família!", "Que amigo especial ✨"];
             }
             const frase = frases[Math.floor(Math.random() * frases.length)];
-            const extraLivro = (item.livro && isNewLivro) ? " (NOVA do livro!)" : (item.livro ? " (do livro)" : "");
+            const extraLivro = item.livro ? " (do livro!)" : "";
             const raroTexto = item.raro ? " ⭐ RARO! ⭐" : "";
             setMensagem(`${item.titulo}: ${frase}${extraLivro}${raroTexto}`, item.raro ? "#c97e2a" : "#c07a3a", item.descricao);
             
             flyingItems.push({
                 startX: item.x, startY: item.y,
-                targetX: bolsa.x, targetY: bolsa.y - 15,
+                targetX: bolsa.x, targetY: bolsa.y + 20,
                 emoji: item.emoji,
                 progresso: 0,
                 velocidade: 0.06
@@ -485,11 +470,10 @@
         }
         
         function resetGame() {
-            livroColetadosIds.clear();
-            totalColetado = 0;
+            collectedIds.clear();
             floatingItems = [];
             flyingItems = [];
-            finalEspecialJaAconteceu = false;
+            window._finalTriggered = false;
             for(let i=0; i<4; i++) spawnItem();
             updateProgressUI();
             setMensagem(`Nova bolsa! Modo: ${currentMode === 'wishes' ? 'Desejos' : 'Personagens'} 🌼`, "#b28046", "");
@@ -502,33 +486,124 @@
             document.getElementById('modoPersonagensBtn').classList.toggle('active', mode === 'characters');
         }
         
-        // Desenhos (mantido)
+        // ========== NOVA FUNÇÃO DE DESENHO DA BOLSA REFORMULADA ==========
         function drawBag() {
-            ctx.shadowBlur = 10;
+            ctx.save();
+            
+            // Pequeno efeito lúdico de balanço contínuo baseado nos frames do jogo
+            const swing = Math.sin(frames * 0.04) * 0.03;
+            ctx.translate(bolsa.x, bolsa.y - 30);
+            ctx.rotate(swing);
+            ctx.translate(-bolsa.x, -(bolsa.y - 30));
+
+            // 1. Alça Tiracolo de Pano (Estilo antiga/Artesanal)
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = "#a45d2a";
+            ctx.lineWidth = 6;
+            ctx.lineCap = "round";
             ctx.beginPath();
-            ctx.ellipse(bolsa.x, bolsa.y, bolsa.radius, bolsa.radius*0.85, 0, 0, Math.PI*2);
-            ctx.fillStyle = "#f7c56e"; ctx.fill();
-            ctx.fillStyle = "#e5b04b";
-            ctx.beginPath(); ctx.ellipse(bolsa.x-6, bolsa.y-8, 11, 9, 0, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.ellipse(bolsa.x+6, bolsa.y-8, 11, 9, 0, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.ellipse(bolsa.x, bolsa.y-28, 34, 16, 0, 0, Math.PI*2);
-            ctx.fillStyle = "#db9f48"; ctx.fill();
-            ctx.beginPath(); ctx.ellipse(bolsa.x, bolsa.y-6, 18, 11, 0, 0, Math.PI*2);
-            ctx.fillStyle = "#ffdb9e"; ctx.fill();
+            // Cria um arco bem alto simulando a alça pendurada vinda de cima
+            ctx.arc(bolsa.x, bolsa.y - 15, 45, Math.PI, 0, false);
+            ctx.stroke();
+            
+            // Costura da alça (detalhe pontilhado)
+            ctx.strokeStyle = "#ffebad";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([3, 4]);
+            ctx.beginPath();
+            ctx.arc(bolsa.x, bolsa.y - 15, 45, Math.PI, 0, false);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reseta o tracejado
+
+            // Sombra projetada do corpo da bolsa
+            ctx.shadowColor = "rgba(74, 45, 20, 0.25)";
+            ctx.shadowBlur = 12;
+            ctx.shadowOffsetY = 6;
+
+            // 2. Corpo Principal da Bolsa (Amarela de pano e bem estufada)
+            // Cores baseadas no esquema quente/vintage do seu app
+            ctx.fillStyle = "#ffd24d"; 
+            ctx.strokeStyle = "#c68037";
+            ctx.lineWidth = 4;
+            
+            const bx = bolsa.x;
+            const by = bolsa.y + 15;
+            const bw = 90; // largura aproximada
+            const bh = 80; // altura aproximada
+
+            ctx.beginPath();
+            // Canto Superior Esquerdo
+            ctx.moveTo(bx - bw/2 + 10, by - bh/2);
+            // Canto Superior Direito
+            ctx.lineTo(bx + bw/2 - 10, by - bh/2);
+            // Curva até a base inferior direita (estufando para as laterais)
+            ctx.quadraticCurveTo(bx + bw/2 + 12, by + bh/2 - 10, bx + bw/2 - 15, by + bh/2);
+            // Linha da Base inferior
+            ctx.lineTo(bx - bw/2 + 15, by + bh/2);
+            // Curva até o canto esquerdo superior
+            ctx.quadraticCurveTo(bx - bw/2 - 12, by + bh/2 - 10, bx - bw/2 + 10, by - bh/2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Reseta sombras para os detalhes internos
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetY = 0;
+
+            // 3. Efeito de Volume/Luz na Bolsa de Pano
+            ctx.fillStyle = "rgba(255, 255, 255, 0.25)";
+            ctx.beginPath();
+            ctx.ellipse(bx - 20, by - 15, 18, 8, Math.PI/6, 0, Math.PI*2);
+            ctx.fill();
+
+            // 4. Tracejado Decorativo de Costura de Pano (Contorno Interno)
+            ctx.strokeStyle = "#b0702a";
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(bx - bw/2 + 14, by - bh/2 + 6);
+            ctx.lineTo(bx + bw/2 - 14, by - bh/2 + 6);
+            ctx.quadraticCurveTo(bx + bw/2 + 5, by + bh/2 - 12, bx + bw/2 - 18, by + bh/2 - 6);
+            ctx.lineTo(bx - bw/2 + 18, by + bh/2 - 6);
+            ctx.quadraticCurveTo(bx - bw/2 - 5, by + bh/2 - 12, bx - bw/2 + 14, by - bh/2 + 6);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 5. O Remendo do Bolsinho Frontal (Super temático da Raquel!)
+            ctx.fillStyle = "#ffeb99";
+            ctx.strokeStyle = "#a45d2a";
+            ctx.lineWidth = 2.5;
+            ctx.save();
+            ctx.translate(bx - 2, by + 12);
+            ctx.rotate(-0.08); // Ligeiramente tortinho para parecer costurado à mão
+            ctx.beginPath();
+            ctx.rect(-18, -18, 36, 34);
+            ctx.fill();
+            ctx.stroke();
+            
+            // Costura interna do remendo
+            ctx.strokeStyle = "#c68037";
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 3]);
+            ctx.strokeRect(-14, -14, 28, 26);
+            ctx.restore();
+
+            // 6. Brilho Mágico de Absorção de Itens
             if(bolsa.brilhoAtivo > 0) {
-                ctx.beginPath(); ctx.ellipse(bolsa.x+12, bolsa.y-14, 12, 8, 0, 0, Math.PI*2);
-                ctx.fillStyle = "#fff5cf"; ctx.fill();
+                ctx.fillStyle = "rgba(255, 255, 255, " + (bolsa.brilhoAtivo / 15) + ")";
+                ctx.beginPath();
+                ctx.arc(bx, by - 10, 35, 0, Math.PI*2);
+                ctx.fill();
+                
+                // Pequenas estrelas de brilho piscando
+                ctx.fillStyle = "#fffae6";
+                ctx.font = "14px Arial";
+                ctx.fillText("✨", bx - 40, by - 20);
+                ctx.fillText("✨", bx + 25, by + 10);
                 bolsa.brilhoAtivo--;
             }
-            ctx.fillStyle = "#6b3f1c";
-            ctx.beginPath(); ctx.arc(bolsa.x-16, bolsa.y-6, 3.8, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(bolsa.x+16, bolsa.y-6, 3.8, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = "#fff";
-            ctx.beginPath(); ctx.arc(bolsa.x-17.5, bolsa.y-8, 1.5, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(bolsa.x+14.5, bolsa.y-8, 1.5, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.arc(bolsa.x, bolsa.y+3, 10, 0.05, Math.PI - 0.05);
-            ctx.strokeStyle = "#8b5a2b"; ctx.lineWidth = 2.2; ctx.stroke();
-            ctx.shadowBlur = 0;
+
+            ctx.restore();
         }
         
         function drawItems() {
@@ -576,16 +651,13 @@
         
         function animate() {
             frames++;
-            // Spawn contínuo e infinito (nunca para)
-            if(frames % 75 === 0 && floatingItems.length < 6) {
-                spawnItem();
-            }
+            if(frames % 85 === 0 && floatingItems.length < 5) spawnItem();
             updateMovimento();
             drawBackground();
             drawItems();
             drawBag();
             ctx.font = "italic 10px 'Quicksand'"; ctx.fillStyle = "#b87c48";
-            ctx.fillText(currentMode === 'wishes' ? "✨ infinitos desejos flutuam ✨" : "🐔 personagens flutuam 🐔", 20, 28);
+            ctx.fillText(currentMode === 'wishes' ? "✨ muitos desejos flutuam ✨" : "🐔 personagens flutuam 🐔", 20, 28);
             animationId = requestAnimationFrame(animate);
         }
         

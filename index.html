@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>✨ A Bolsa Amarela — Muitas Vontades ✨</title>
+    <title>✨ A Bolsa Amarela✨</title>
     <style>
         * {
             user-select: none;
@@ -244,7 +245,14 @@
         canvas.width = width; canvas.height = height;
         
         let currentMode = 'wishes';
-        let collectedIds = new Set();
+        
+        // Controle de coleção (APENAS para o final especial)
+        let livroColetadosIds = new Set();   // guarda as 3 do livro (só pra saber se já pegou cada uma)
+        let finalEspecialJaAconteceu = false;
+        
+        // Todos os itens coletados (contagem total, com repetição)
+        let totalColetado = 0;
+        
         let floatingItems = [];
         let flyingItems = [];
         let frames = 0;
@@ -284,8 +292,10 @@
             { id: "w_biscoito", emoji: "🍪", titulo: "chover biscoito", cor: "#dbae6a", descricao: "Comer biscoito todo dia", livro: false, raro: false },
             { id: "w_sorvete", emoji: "🍦", titulo: "sorvete infinito", cor: "#f2c4a8", descricao: "Sorvete que nunca acaba", livro: false, raro: false },
             { id: "w_brincar_eternamente", emoji: "🎠", titulo: "brincar para sempre", cor: "#deaa88", descricao: "Férias eternas", livro: false, raro: false },
+            { id: "w_amizade", emoji: "🤝", titulo: "fazer amigos", cor: "#c9ae7a", descricao: "Encontrar amigos verdadeiros", livro: false, raro: false },
+            { id: "w_ajudar", emoji: "🫂", titulo: "ajudar as pessoas", cor: "#b5c48a", descricao: "Tornar o mundo melhor", livro: false, raro: false },
             
-            // Vontades canônicas do livro (3)
+            // Vontades canônicas do livro (3) - aparecem normal, mas o controle é separado
             { id: "w_escrever", emoji: "📖", titulo: "escrever", cor: "#e3b87c", descricao: "Vontade de ser escritora", livro: true, raro: false },
             { id: "w_crescer", emoji: "👧➡️👩", titulo: "crescer", cor: "#d9ae6c", descricao: "Ser respeitada como gente grande", livro: true, raro: false },
             { id: "w_menino", emoji: "♂️", titulo: "ser menino", cor: "#7cb5a3", descricao: "Ter as mesmas liberdades", livro: true, raro: false },
@@ -293,10 +303,12 @@
             // Mais sentimentos e desejos abstratos
             { id: "w_ser_feliz", emoji: "😊", titulo: "ser feliz", cor: "#f2cf66", descricao: "Acordar feliz todo dia", livro: false, raro: false },
             { id: "w_ser_abraçado", emoji: "🤗", titulo: "ganhar abraços", cor: "#e3a571", descricao: "Abraços quentinhos sempre", livro: false, raro: false },
-            { id: "w_ter_um_dragao", emoji: "🐉", titulo: "ter um dragão", cor: "#b5651e", descricao: "Melhor amigo voador", livro: false, raro: true }
+            { id: "w_ter_um_dragao", emoji: "🐉", titulo: "ter um dragão", cor: "#b5651e", descricao: "Melhor amigo voador", livro: false, raro: true },
+            { id: "w_paz", emoji: "🕊️", titulo: "paz no mundo", cor: "#aaccaa", descricao: "Sem guerras, só amor", livro: false, raro: true },
+            { id: "w_sonhar", emoji: "🌙", titulo: "sonhar acordado", cor: "#c29acc", descricao: "Imaginar mundos incríveis", livro: false, raro: false }
         ];
         
-        // Personagens do livro (6)
+        // Personagens do livro (6) - também podem repetir depois do final
         const personagensLivro = [
             { id: "p_afonso", emoji: "🐔", titulo: "Afonso", cor: "#e3a05e", descricao: "Galo que fugiu do galinheiro. Melhor amigo de Raquel.", livro: true, raro: false },
             { id: "p_terrivel", emoji: "⚔️🐔", titulo: "Terrível", cor: "#bc7a3a", descricao: "Primo de Afonso, galo de briga, mas de bom coração.", livro: true, raro: false },
@@ -313,30 +325,29 @@
             return currentMode === 'wishes' ? listaVontades : personagensLivro;
         }
         
-        function getTotalLivroCount() {
-            const lista = getCurrentList();
-            return lista.filter(item => item.livro === true).length;
-        }
-        
-        function getCollectedLivroCount() {
+        // Verifica quantas das 3 (ou 6) do livro já foram coletadas PELA PRIMEIRA VEZ
+        function getLivroColetadosCount() {
             const lista = getCurrentList();
             const livroIds = lista.filter(item => item.livro === true).map(item => item.id);
             let count = 0;
-            for(let id of livroIds) if(collectedIds.has(id)) count++;
+            for(let id of livroIds) {
+                if(livroColetadosIds.has(id)) count++;
+            }
             return count;
         }
         
         function updateProgressUI() {
-            const totalLivro = getTotalLivroCount();
-            const collectedLivro = getCollectedLivroCount();
-            const percent = (collectedLivro / totalLivro) * 100;
+            const totalLivro = (currentMode === 'wishes' ? 3 : 6);
+            const coletados = getLivroColetadosCount();
+            const percent = (coletados / totalLivro) * 100;
             document.getElementById('progressBar').style.width = percent + '%';
-            document.getElementById('specialBadge').innerHTML = `📖 ${collectedLivro}/${totalLivro}`;
-            document.getElementById('totalCount').innerText = collectedIds.size;
+            document.getElementById('specialBadge').innerHTML = `📖 ${coletados}/${totalLivro}`;
+            document.getElementById('totalCount').innerText = totalColetado;
             document.getElementById('modoLabel').innerHTML = currentMode === 'wishes' ? 'desejo(s)' : 'personagem(ns)';
             
-            if(collectedLivro === totalLivro && totalLivro > 0 && !window._finalTriggered) {
-                window._finalTriggered = true;
+            // Final especial: só acontece uma vez, quando completa os itens do livro pela PRIMEIRA vez
+            if(coletados === totalLivro && !finalEspecialJaAconteceu && totalLivro > 0) {
+                finalEspecialJaAconteceu = true;
                 triggerFinalSpecial();
             }
         }
@@ -344,9 +355,9 @@
         function triggerFinalSpecial() {
             let mensagemFinal = "";
             if(currentMode === 'wishes') {
-                mensagemFinal = "Você guardou as três vontades de Raquel: escrever, crescer e ser menino. A bolsa pesa de alegria! ✨ Raquel aprendeu que suas vontades são importantes e ninguém pode apagá-las. 💛";
+                mensagemFinal = "Você guardou as três vontades de Raquel: escrever, crescer e ser menino. A bolsa pesa de alegria! ✨ Agora ela sabe que todas as vontades são importantes — e você pode continuar guardando quantas quiser! 💛";
             } else {
-                mensagemFinal = "Todos os amigos especiais estão dentro da bolsa! Afonso, Terrível, Guarda-chuva, Alfinete, Cartas e Desenhos. Raquel nunca mais se sente sozinha. A imaginação é o melhor lugar do mundo. 🌟";
+                mensagemFinal = "Todos os amigos especiais estão dentro da bolsa! Afonso, Terrível, Guarda-chuva, Alfinete, Cartas e Desenhos. Raquel nunca mais se sente sozinha. E você pode continuar brincando com eles para sempre! 🌟";
             }
             
             const finalDiv = document.createElement('div');
@@ -364,10 +375,8 @@
         
         function spawnItem() {
             const lista = getCurrentList();
-            const notCollected = lista.filter(item => !collectedIds.has(item.id));
-            if(notCollected.length === 0) return;
-            
-            const obj = notCollected[Math.floor(Math.random() * notCollected.length)];
+            // SORTEIA QUALQUER ITEM DA LISTA (PODE REPETIR!)
+            const obj = lista[Math.floor(Math.random() * lista.length)];
             const radius = 34;
             const x = 45 + Math.random() * (width - 90);
             const y = -radius - Math.random() * 60;
@@ -413,8 +422,15 @@
         }
         
         function coletarItem(item, idx) {
-            if(collectedIds.has(item.id)) return;
-            collectedIds.add(item.id);
+            // Aumenta contagem total SEMPRE
+            totalColetado++;
+            
+            // Se for item do livro e AINDA não foi coletado antes, registra para o progresso
+            let isNewLivro = false;
+            if(item.livro && !livroColetadosIds.has(item.id)) {
+                livroColetadosIds.add(item.id);
+                isNewLivro = true;
+            }
             
             let frases = [];
             if(item.raro) {
@@ -425,7 +441,7 @@
                     : ["Entrou na bolsa! 👜", "Agora faz parte da família!", "Que amigo especial ✨"];
             }
             const frase = frases[Math.floor(Math.random() * frases.length)];
-            const extraLivro = item.livro ? " (do livro!)" : "";
+            const extraLivro = (item.livro && isNewLivro) ? " (NOVA do livro!)" : (item.livro ? " (do livro)" : "");
             const raroTexto = item.raro ? " ⭐ RARO! ⭐" : "";
             setMensagem(`${item.titulo}: ${frase}${extraLivro}${raroTexto}`, item.raro ? "#c97e2a" : "#c07a3a", item.descricao);
             
@@ -470,10 +486,11 @@
         }
         
         function resetGame() {
-            collectedIds.clear();
+            livroColetadosIds.clear();
+            totalColetado = 0;
             floatingItems = [];
             flyingItems = [];
-            window._finalTriggered = false;
+            finalEspecialJaAconteceu = false;
             for(let i=0; i<4; i++) spawnItem();
             updateProgressUI();
             setMensagem(`Nova bolsa! Modo: ${currentMode === 'wishes' ? 'Desejos' : 'Personagens'} 🌼`, "#b28046", "");
@@ -651,13 +668,16 @@
         
         function animate() {
             frames++;
-            if(frames % 85 === 0 && floatingItems.length < 5) spawnItem();
+            // Spawn contínuo e infinito (nunca para)
+            if(frames % 75 === 0 && floatingItems.length < 6) {
+                spawnItem();
+            }
             updateMovimento();
             drawBackground();
             drawItems();
             drawBag();
             ctx.font = "italic 10px 'Quicksand'"; ctx.fillStyle = "#b87c48";
-            ctx.fillText(currentMode === 'wishes' ? "✨ muitos desejos flutuam ✨" : "🐔 personagens flutuam 🐔", 20, 28);
+            ctx.fillText(currentMode === 'wishes' ? "✨ infinitos desejos flutuam ✨" : "🐔 personagens flutuam 🐔", 20, 28);
             animationId = requestAnimationFrame(animate);
         }
         
